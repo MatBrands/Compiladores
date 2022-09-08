@@ -216,8 +216,14 @@ void interpret(instruction *code){
 
 		printf("%s\t\t%d\t%d\t\t%d\t\t%d\t\t", getInstructionByID(i.f),i.l, i.a, s[t], p);
 
-		for (int aux = b; aux<t+1;aux++){
-			printf("%d ", s[aux]);
+		for (int i = b; i<t+1;i++){
+			if (i == 3){
+				printf("%d | ", s[i]);
+			}else{
+				printf("%d ", s[i]);
+			}
+
+			
 		}
 		printf("\n");
 	}while(p < countForInstructions);
