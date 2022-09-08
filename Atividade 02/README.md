@@ -79,5 +79,5 @@ OPR             0       2               3               6               3
 Output: 3
 ```
 ## Referências
-https://en.wikipedia.org/wiki/P-code_machine
+https://en.wikipedia.org/wiki/P-code_machine     
 https://blackmesatech.com/2011/12/pl0/pl0.xhtml
