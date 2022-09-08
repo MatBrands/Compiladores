@@ -31,7 +31,13 @@ Ao executá-lo redija o nome do arquivo destino contendo as instruções, caso c
 ```
 Entrada:
 ```
-./examples/sum_1_and_2
+INT 0 2
+LIT 0 1
+STO 0 0
+LIT 0 2
+STO 0 1
+OPR 0 2
+OPR 0 0
 ```
 Saida:
 ```
