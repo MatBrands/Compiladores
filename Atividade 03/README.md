@@ -44,16 +44,17 @@ Tabela referente ass operações:
 Para a execução não é necessário o uso de nenhuma dependência, basta compila-lo.
 
 ```sh
-g++ p-code.c -o p-code
+g++ nome_do_arquivo.cpp -o nome_do_arquivo
 ```
 
 Então execute-o.
 
 ```sh
-./p-code arquivo.txt
+./nome_do_arquivo
 ```
 
 ## Referências
 https://en.wikipedia.org/wiki/P-code_machine     
 http://th.cpp.sh/9nsyz 
 https://blackmesatech.com/2011/12/pl0/pl0.xhtml
+http://th.cpp.sh/9nsyz

@@ -3,7 +3,6 @@
 // C conventions
 // 0 == FALSE
 //
-
 #include <stdio.h>
 
 #define levmax 3
@@ -194,8 +193,45 @@ void pcodevhw(){ // begin
 
 int main(){
 
-	// Aqui vc preenche as instrucoes no vetor code
-    code[0].f = OPR; code[0].l = 0; code[0].a = 0;
+	// Main:
+    code[0].f = INT; code[0].l = 0; code[0].a = 4;          // 3 espaços do sistema + 1 variável local = 4
+    code[1].f = LIT; code[1].l = 0; code[1].a = 5;          // Valor que será calculado no fib
+    code[2].f = STO; code[2].l = 0; code[2].a = 4 + 3;      // Passamos como parâmetro
+    code[3].f = CAL; code[3].l = 0; code[3].a = 6;          // Chamamos a função fib
+    code[4].f = LOD; code[4].l = 0; code[4].a = 4 + 4;      // Pegamos o retorno da função
+    code[5].f = OPR; code[5].l = 0; code[5].a = 0;          // Retorno da main
+    // n <= 1
+    code[6].f = INT; code[6].l = 0; code[6].a = 5;
+    code[7].f = LOD; code[7].l = 0; code[7].a = 3;          // Carrega o n
+    code[8].f = LIT; code[8].l = 0; code[8].a = 1;          // Carrega 1 para verificar na condicional
+    code[9].f = OPR; code[9].l = 0; code[9].a = 12;         // Verifica se n é <= 1
+    code[10].f = JPC; code[10].l = 0; code[10].a = 14;      // Se for dará jump no else para prosseguir para fib(n-1)+fib(n-2);
+    // if
+    code[11].f = LOD; code[11].l = 0; code[11].a = 3;       // Carrega o n
+    code[12].f = STO; code[12].l = 0; code[12].a = 4;       // Salva o retorno
+    code[13].f = OPR; code[13].l = 0; code[13].a = 0;       // Retorno da subrotina
+    // else
+    // fib(n-1)
+    code[14].f = LOD; code[14].l = 0; code[14].a = 3;       // Carrega o n
+    code[15].f = LIT; code[15].l = 0; code[15].a = 1;       // Carrega 1 para fazer a subtração (n-1)
+    code[16].f = OPR; code[16].l = 0; code[16].a = 3;       // n-1
+    code[17].f = STO; code[17].l = 0; code[17].a = 5 + 3;   // Passa como parâmetro
+    code[18].f = CAL; code[18].l = 0; code[18].a = 6;       // Chama a função para fib(n-1)
+    code[19].f = LOD; code[19].l = 0; code[19].a = 5 + 4;   // Pegamos o retorno da função
+    code[20].f = STO; code[20].l = 0; code[20].a = 4;       // Salva o retorno
+    // fib(n-2)
+    code[21].f = LOD; code[21].l = 0; code[21].a = 3;       // Carrega o n
+    code[22].f = LIT; code[22].l = 0; code[22].a = 2;       // Carrega 2 para fazer a subtração (n-2)
+    code[23].f = OPR; code[23].l = 0; code[23].a = 3;       // n-1
+    code[24].f = STO; code[24].l = 0; code[24].a = 5 + 3;   // Passa como parâmetro
+    code[25].f = CAL; code[25].l = 0; code[25].a = 6;       // Chama a função para fib(n-2)
+    code[26].f = LOD; code[26].l = 0; code[26].a = 5 + 4;   // Pegamos o retorno da função
+    // fib (n-1) + fib(n-2)
+    code[27].f = LOD; code[27].l = 0; code[27].a = 4;       // Carrega o fib(n-1)
+    code[28].f = OPR; code[28].l = 0; code[28].a = 2;       // fib(n-1) + fib(n-2)
+    code[29].f = STO; code[29].l = 0; code[29].a = 4;       // Salva o retorno
+    // return
+    code[30].f = OPR; code[30].l = 0; code[30].a = 0;       // Retorno da subrotina
 
 	// Aqui vc chama a P-code machine para interpretar essas instrucoes
 	pcodevhw();
