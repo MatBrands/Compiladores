@@ -1,0 +1,67 @@
+/*
+int fibonacci(int n){
+    int x = 0, y = 1, temp;
+    for(int i = 1; i < n; i++){
+        temp = x + y;
+        x = y;
+        y = temp;
+    }
+    return y;
+}
+void main(){
+    int value;
+    value = fibonacci(5)
+}
+*/
+
+
+int i = 0, x = 5;
+
+// Main
+code[i].f = INT; code[i].l = 0; code[i++].a = 4;
+code[i].f = LIT; code[i].l = 0; code[i++].a = x;
+code[i].f = STO; code[i].l = 0; code[i++].a = 4 + 3;
+code[i].f = CAL; code[i].l = 0; code[i++].a = 7;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 4 + 6;
+code[i].f = STO; code[i].l = 0; code[i++].a = 3;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 0;
+// Fib
+code[i].f = INT; code[i].l = 0; code[i++].a = 7;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 0;
+code[i].f = STO; code[i].l = 0; code[i++].a = 5;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 1;
+code[i].f = STO; code[i].l = 0; code[i++].a = 6;
+// if n == 0
+code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 0;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 9;
+code[i].f = JPC; code[i].l = 0; code[i++].a = 19;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 0;
+code[i].f = STO; code[i].l = 0; code[i++].a = 6;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 0;
+// if n == 1
+code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 1;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 9;
+code[i].f = JPC; code[i].l = 0; code[i++].a = 26;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 1;
+code[i].f = STO; code[i].l = 0; code[i++].a = 6;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 0;
+// else
+code[i].f = LIT; code[i].l = 0; code[i++].a = 1;
+code[i].f = STO; code[i].l = 0; code[i++].a = 4;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 5;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 6;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 2;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 6;
+code[i].f = STO; code[i].l = 0; code[i++].a = 5;
+code[i].f = STO; code[i].l = 0; code[i++].a = 6;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 4;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 1;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 2;
+code[i].f = STO; code[i].l = 0; code[i++].a = 4;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 4;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 9;
+code[i].f = JPC; code[i].l = 0; code[i++].a = 28;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 0;

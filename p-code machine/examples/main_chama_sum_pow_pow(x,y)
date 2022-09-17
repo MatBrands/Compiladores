@@ -1,0 +1,47 @@
+/*
+int soma_pow_pow(int x, int y){
+    int resultado = 0;
+    for (int i = x; i <= y; i ++){
+        i = i * i * i;
+        resultado += i;
+    }
+    return resultado;
+}
+
+void main (){
+    int valor;
+    valor = soma_pow_pow(1, 100);
+}
+*/
+
+int i = 0, x = 1, y = 100;
+
+// Main
+code[i].f = INT; code[i].l = 0; code[i++].a = 4;
+code[i].f = LIT; code[i].l = 0; code[i++].a = x;
+code[i].f = STO; code[i].l = 0; code[i++].a = 4 + 3;
+code[i].f = LIT; code[i].l = 0; code[i++].a = y;
+code[i].f = STO; code[i].l = 0; code[i++].a = 4 + 4;
+code[i].f = CAL; code[i].l = 0; code[i++].a = 9;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 4 + 5;
+code[i].f = STO; code[i].l = 0; code[i++].a = 3;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 0;
+// Funcao
+code[i].f = INT; code[i].l = 0; code[i++].a = 6;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 4;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 4;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 5;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 2;
+code[i].f = STO; code[i].l = 0; code[i++].a = 5;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 1;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 2;
+code[i].f = STO; code[i].l = 0; code[i++].a = 3;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 4;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 13;
+code[i].f = JPC; code[i].l = 0; code[i++].a = 10;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 0;
