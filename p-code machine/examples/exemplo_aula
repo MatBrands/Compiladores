@@ -1,0 +1,25 @@
+int i = 0;
+
+code[i].f = INT; code[i].l = 0; code[i++].a = 4;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 1;
+code[i].f = STO; code[i].l = 0; code[i++].a = 7;
+code[i].f = CAL; code[i].l = 0; code[i++].a = 5;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 0;
+code[i].f = INT; code[i].l = 0; code[i++].a = 6;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 2;
+code[i].f = STO; code[i].l = 0; code[i++].a = 4;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 3;
+code[i].f = STO; code[i].l = 0; code[i++].a = 5;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 4;
+code[i].f = STO; code[i].l = 0; code[i++].a = 9;
+code[i].f = CAL; code[i].l = 0; code[i++].a = 14;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 0;
+code[i].f = INT; code[i].l = 0; code[i++].a = 5;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 4;
+code[i].f = STO; code[i].l = 0; code[i++].a = 4;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 4;
+code[i].f = STO; code[i].l = 0; code[i++].a = 8;
+code[i].f = CAL; code[i].l = 0; code[i++].a = 21;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 0;
+code[i].f = INT; code[i].l = 0; code[i++].a = 4;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 0;
