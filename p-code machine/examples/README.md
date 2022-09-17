@@ -55,7 +55,7 @@ int soma_pow(int x, int y){
 
 void main (){
     int valor;
-    valor = soma_pow(1, 10);
+    valor = soma_pow(1, 100);
 }
 ```
 
@@ -72,7 +72,7 @@ int soma_pow_pow(int x, int y){
 
 void main (){
     int valor;
-    valor = soma_pow_pow(1, 10);
+    valor = soma_pow_pow(1, 100);
 }
 ```
 
