@@ -151,8 +151,6 @@ void pcodevhw(){
 
 int main(){
 
-    // Insira seu código aki
-
 	pcodevhw();
 	return 0;
 }

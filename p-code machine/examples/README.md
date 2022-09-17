@@ -122,8 +122,6 @@ int factorial (int n){
 void main(){
     int value;
     value = factorial(4);
-    
-    return;
 }
 ```
 
@@ -141,7 +139,5 @@ int fibonacci (int n){
 void main(){
     int value;
     value = fibonacci(5);
-    
-    return;
 }
 ```

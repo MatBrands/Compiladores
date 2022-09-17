@@ -1,0 +1,53 @@
+/*
+int fibonacci (int n){
+    if (n <= 1){
+        return n;
+    }
+    else{
+        return (fibonacci(n-1) + fibonacci(n-2));
+    }
+}
+
+void main(){
+    int value;
+    value = fibonacci(5);
+}
+*/
+
+int i = 0, x = 5;
+// Main
+code[i].f = INT; code[i].l = 0; code[i++].a = 4;
+code[i].f = LIT; code[i].l = 0; code[i++].a = x;
+code[i].f = STO; code[i].l = 0; code[i++].a = 4 + 3;
+code[i].f = CAL; code[i].l = 0; code[i++].a = 7;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 4 + 4;
+code[i].f = STO; code[i].l = 0; code[i++].a = 3;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 0;
+// Fib
+code[i].f = INT; code[i].l = 0; code[i++].a = 5;
+// n <= 1
+code[i].f = LIT; code[i].l = 0; code[i++].a = 1;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 10;
+code[i].f = JPC; code[i].l = 0; code[i++].a = 15;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
+code[i].f = STO; code[i].l = 0; code[i++].a = 4;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 0;
+// else
+code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 1;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 3;
+code[i].f = STO; code[i].l = 0; code[i++].a = 5 + 3;
+code[i].f = CAL; code[i].l = 0; code[i++].a = 7;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 5 + 4;
+code[i].f = STO; code[i].l = 0; code[i++].a = 4;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
+code[i].f = LIT; code[i].l = 0; code[i++].a = 2;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 3;
+code[i].f = STO; code[i].l = 0; code[i++].a = 5 + 3;
+code[i].f = CAL; code[i].l = 0; code[i++].a = 7;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 5 + 4;
+code[i].f = LOD; code[i].l = 0; code[i++].a = 4;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 2;
+code[i].f = STO; code[i].l = 0; code[i++].a = 4;
+code[i].f = OPR; code[i].l = 0; code[i++].a = 0;
