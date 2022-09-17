@@ -31,12 +31,12 @@ Tabela referente ass operações:
 | 4  | Multiply  | x=pop();y=pop();push(y*x).  |
 | 5  | Divide  | x=pop();y=pop();push(y/x).  |
 | 6  | Odd?  | Test the value at the top of the stack to see if it's odd or not.  |
-| 7  | == | x=pop();y=pop();push(y==x). |
-| 8  | <> | x=pop();y=pop();push(y<>x). |
-| 9  | < | x=pop();y=pop();push(y<x). |
-| 10  | >= | x=pop();y=pop();push(y>=x). |
-| 11  | > | x=pop();y=pop();push(y>x). |
-| 12  | <= | x=pop();y=pop();push(y<=x). |
+| 8  | == | x=pop();y=pop();push(y==x). |
+| 9  | <> | x=pop();y=pop();push(y<>x). |
+| 10  | < | x=pop();y=pop();push(y<x). |
+| 11  | >= | x=pop();y=pop();push(y>=x). |
+| 12  | > | x=pop();y=pop();push(y>x). |
+| 13  | <= | x=pop();y=pop();push(y<=x). |
 
 ## Começando
 

@@ -141,36 +141,38 @@ void interpret(instruction *code){
 						s[t] = (s[t] % 2 == 1);
 						break;
 					}
-					case 7:{
+					case 8:{
 						t--;
 						s[t] = (s[t] == s[t + 1]);
 						break;
 					}
-					case 8:{
+					case 9:{
 						t--;
 						s[t] = (s[t] != s[t + 1]);
 						break;
 					}
-					case 9:{
+					case 10:{
 						t--;
 						s[t] = (s[t] < s[t + 1]);
 						break;
 					}
-					case 10:{
+					case 11:{
 						t--;
 						s[t] = (s[t] >= s[t + 1]);
 						break;
 					}
-					case 11:{
+					case 12:{
 						t--;
 						s[t] = (s[t] > s[t + 1]);
 						break;
 					}
-					case 12:{
+					case 13:{
 						t--;
 						s[t] = (s[t] <= s[t + 1]);
 						break;
 					}
+					default:
+						break;
 				}
 				break;
 			}
