@@ -19,9 +19,8 @@ code[i].f = LIT; code[i].l = 0; code[i++].a = y;
 code[i].f = STO; code[i].l = 0; code[i++].a = 4 + 4;
 code[i].f = CAL; code[i].l = 0; code[i++].a = 9;
 code[i].f = LOD; code[i].l = 0; code[i++].a = 4 + 5;
-code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
+code[i].f = STO; code[i].l = 0; code[i++].a = 3;
 code[i].f = OPR; code[i].l = 0; code[i++].a = 0;
-
 // Soma
 code[i].f = INT; code[i].l = 0; code[i++].a = 6;
 code[i].f = LOD; code[i].l = 0; code[i++].a = 3;
