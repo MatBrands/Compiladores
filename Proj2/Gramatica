@@ -1,0 +1,7 @@
+S -> M | GM | FGM
+F -> f(){ C; r(E); }
+G -> g(){ C; r(E); }
+M -> m() { C; r(E); }
+E -> 0 | 1 | x | y | (EXE)
+X -> + | - | * | /
+C -> h=E | i=E | j=E | k=E | z=E | (EXE) | w(E){ C; } | f(E){ C; } | o(E;E;E){ C; }
