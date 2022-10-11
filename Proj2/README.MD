@@ -1,8 +1,7 @@
 # Análise Sintática
 ## Implementação em C
 
-Os projetos são aplicações em C de algoritmos que buscam simular um autômato pilha que reconhece a linguagem gerada por uma gramática livre de contexto.:
-http://th.cpp.sh/9nsyz 
+Os projetos são aplicações em C de algoritmos que buscam simular um autômato pilha que reconhece a linguagem gerada por uma gramática livre de contexto.
 
 - Produções
 - Proj2a
