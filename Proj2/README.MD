@@ -7,8 +7,6 @@ Os projetos são aplicações em C de algoritmos que buscam simular um autômato
 - Proj2a
 - Proj2b
 
-- Referências
-
 ## Produções:
 
 ```sh
