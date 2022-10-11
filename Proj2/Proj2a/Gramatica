@@ -1,5 +1,5 @@
-S -> M | GM | FGM
-F -> f(){ C; r(E); }
+S -> M | GM | NGM
+N -> n(){ C; r(E); }
 G -> g(){ C; r(E); }
 M -> m() { C; r(E); }
 E -> 0 | 1 | x | y | (EXE)
