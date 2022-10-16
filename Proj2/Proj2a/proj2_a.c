@@ -45,8 +45,7 @@ void parsing_table(FILE *file){
     token = fgetc(file);
     printf("i \t Qi \t Token \t Stack \t Pi\n");
     printf("%d \t Q0 \t %c \t %c \t -\n", i, token, stack[top]);
-    top++;
-    stack[top] = 'S';
+    stack[++top] = 'S';
     goto tbl_q1;
     
     tbl_q1:
