@@ -2,23 +2,29 @@
 #include <stdlib.h>
 
 // Global Variables
+struct No{
+    char token;
+	int visitado;
+    int indice;
+    int filhos;
+}; typedef struct No Tree;
 char token;
 FILE *file;
+const int max = 500;
 int productions[100];
 int p_count, prod, word = 0, aceito = 0;
+int fim_vetor;
 
 // Functions
 FILE *readFile(char *);
-void start();
-void lex();
-void erro(int);
-int S();
+void start(); void lex();
+void erro(int); int S();
 int N(); int G(); int M();
-int E(); int X();
-int C();
+int E(); int X(); int C();
 void start_tree();
-void parse_tree(char *, int *, int);
-void put_production(char *, int *, int);
+void parse_tree(Tree *, int);
+void put_production(Tree *, int);
+// 
 
 int main(int argc, char **argv){
     if(argc == 2){ file = readFile(argv[1]); }
@@ -327,148 +333,151 @@ int C(){
 }
 
 void start_tree(){
-    const int max = 50000;
-    char tree[max];
-    int visitados[max];
-    prod = 0;
-    for (int i = 0; i < max; i++) { tree[i] = ' '; visitados[i] = 0; }
-    tree[0] = 'S';
+    Tree tree[max];
+    for (int i = 0; i < max; i++) { tree[i].token = ' '; tree[i].visitado = 0; tree[i].indice = -1; tree[i].filhos = 0; }
+    prod = 0; fim_vetor = 1; tree[0].token = 'S'; tree[0].filhos = 1; tree[0].indice = 0;
 
-    parse_tree(tree, visitados, 0);
+    parse_tree(tree, 0);
 
-    for (int i = 0; i< max; i++){
-        if (tree[i] != ' ') { printf("%c[%d]\t", tree[i], i); }
+    for (int i = 0; i< fim_vetor; i++){ if (i<fim_vetor-1){ printf("[%d|%d| %c ], ", i, tree[i].indice, tree[i].token); } else { printf("[%d|%d| %c ]\n", i, tree[i].indice, tree[i].token); } }
+}
+
+void parse_tree(Tree * tree, int atual){
+    if (prod > p_count || atual == 0 && tree[atual].visitado == 1) { return; }
+    int inicio_vetor = -1;
+
+    for (int i = 0; i < fim_vetor || (tree[i].indice == tree[atual].indice*12+1); i++){ if (tree[i].indice == tree[atual].indice*12+1) { inicio_vetor = i; } }
+    if ( inicio_vetor == -1 ) { put_production(tree, atual); }
+
+    for (int i = 0; i < fim_vetor || (tree[i].indice == tree[atual].indice*12+1);i++){ if (tree[i].indice == tree[atual].indice*12+1) { inicio_vetor = i; } }
+    for (int i = inicio_vetor; i < inicio_vetor+tree[inicio_vetor].filhos; i++){
+        if (tree[i].visitado == 0){ parse_tree(tree, i); return; }
     }
-
-    printf("\n");
+    tree[atual].visitado = 1;
+    parse_tree(tree, 0);
 }
 
-void parse_tree(char *tree, int *visitados, int atual){
-    if (atual == 0 && visitados[atual] == 1) { return; }
-    if (prod > p_count){ return; }
-    // --------------------------------------------------------------------
-    if (tree[4*atual+1] == ' ') { put_production(tree, visitados, atual); prod++; }
-    // --------------------------------------------------------------------
-    if (visitados[4*atual+1] == 0){ parse_tree(tree, visitados, 4*atual+1); }
-    else if (visitados[4*atual+2] == 0){ parse_tree(tree, visitados, 4*atual+2); }
-    else if (visitados[4*atual+3] == 0){ parse_tree(tree, visitados, 4*atual+3); }
-    else if (visitados[4*atual+4] == 0){ parse_tree(tree, visitados, 4*atual+4); }
-    else { visitados[atual] = 1; parse_tree(tree, visitados, 0); }
-}
-
-void put_production(char *tree, int *visitados, int atual){
-    if (productions[prod] == 1){ 
-        if (tree[atual] == 'S'){
-            tree[4*atual + 1] = 'M'; tree[4*atual + 2] = ' '; tree[4*atual + 3] = ' '; tree[4*atual + 4] = ' ';
-            visitados[4*atual+2] = 1; visitados[4*atual+3] = 1; visitados[4*atual+4] = 1;
-        }
+void put_production(Tree * tree, int atual){
+    // P1: S -> M
+    if (productions[prod] == 1){
+        if (tree[atual].token != 'S') { return; }
+        tree[fim_vetor].token = 'M';
+        tree[fim_vetor].filhos = 1;
     }
     // P2: S -> GM
     else if(productions[prod] == 2) {
-        if (tree[atual] == 'S'){
-            tree[4*atual + 1] = 'G'; tree[4*atual + 2] = 'M'; tree[4*atual + 3] = ' '; tree[4*atual + 4] = ' ';
-            visitados[4*atual+3] = 1; visitados[4*atual+4] = 1;
-        }
+        if (tree[atual].token != 'S') { return; }
+        tree[fim_vetor].token = 'G'; tree[fim_vetor+1].token = 'M';
+        tree[fim_vetor].filhos = 2;
     }
     // P3: S -> NGM
     else if(productions[prod] == 3) {
-        if (tree[atual] == 'S'){
-            tree[4*atual + 1] = 'N'; tree[4*atual + 2] = 'G'; tree[4*atual + 3] = 'M'; tree[4*atual + 4] = ' ';
-            visitados[4*atual+4] = 1;
-        }
+        if (tree[atual].token != 'S') { return; }
+        tree[fim_vetor].token = 'N'; tree[fim_vetor+1].token = 'G'; tree[fim_vetor+2].token = 'M';
+        tree[fim_vetor].filhos = 3;
     }
     // P4: N -> n(){ C; r(E); }
-    else if(productions[prod] == 4) {
-        if (tree[atual] == 'N'){
-            tree[4*atual + 1] = 'C'; tree[4*atual + 2] = 'E'; tree[4*atual + 3] = ' '; tree[4*atual + 4] = ' ';
-            visitados[4*atual+3] = 1; visitados[4*atual+4] = 1;
-        }
-    }
     // P5: G -> g(){ C; r(E); }
-    else if(productions[prod] == 5) {
-        if (tree[atual] == 'G'){
-            tree[4*atual + 1] = 'C'; tree[4*atual + 2] = 'E'; tree[4*atual + 3] = ' '; tree[4*atual + 4] = ' ';
-            visitados[4*atual+3] = 1; visitados[4*atual+4] = 1;
-        }
-    }
     // P6: M -> m() { C; r(E); }
-    else if(productions[prod] == 6) {
-        if (tree[atual] == 'M'){
-            tree[4*atual + 1] = 'C'; tree[4*atual + 2] = 'E'; tree[4*atual + 3] = ' '; tree[4*atual + 4] = ' ';
-            visitados[4*atual+3] = 1; visitados[4*atual+4] = 1;
+    else if(productions[prod] >= 4 && productions[prod] <= 6) {
+        for (int i = 0; i < 12; i++){ tree[fim_vetor+i].visitado = 1; }
+
+        if (productions[prod] == 4) {
+            if (tree[atual].token != 'N') { return; }
+            tree[fim_vetor].token = 'n';
         }
+        else if (productions[prod] == 5) {
+            if (tree[atual].token != 'G') { return; }
+            tree[fim_vetor].token = 'g';
+        }
+        else {
+            if (tree[atual].token != 'M') { return; }
+            tree[fim_vetor].token = 'm';
+        }
+        tree[fim_vetor+1].token = '('; tree[fim_vetor+2].token = ')'; tree[fim_vetor+3].token = '{';  tree[fim_vetor+4].token = 'C'; 
+        tree[fim_vetor+5].token = ';'; tree[fim_vetor+6].token = 'r'; tree[fim_vetor+7].token = '('; tree[fim_vetor+8].token = 'E';
+        tree[fim_vetor+9].token = ')'; tree[fim_vetor+10].token = ';'; tree[fim_vetor+11].token = '}';
+        tree[fim_vetor+4].visitado = 0; tree[fim_vetor+8].visitado = 0;
+        tree[fim_vetor].filhos = 12;
     }
     // P7: E -> 0
     // P8: E -> 1
     // P9: E -> x
     // P10: E -> y
     else if(productions[prod] >= 7 && productions[prod] <= 10) {
-        if (tree[atual] == 'E'){
-            if (productions[prod] == 7) tree[4*atual + 1] = '0';
-            else if (productions[prod] == 8) { tree[4*atual + 1] = '1'; }
-            else if (productions[prod] == 9) { tree[4*atual + 1] = 'x'; }
-            else { tree[4*atual + 1] = 'y'; }
-            tree[4*atual + 2] = ' '; tree[4*atual + 3] = ' '; tree[4*atual + 4] = ' ';
-            visitados[4*atual+1] = 1; visitados[4*atual+2] = 1; visitados[4*atual+3] = 1; visitados[4*atual+4] = 1;
-        }
+        if (tree[atual].token != 'E') { return; }
+        if (productions[prod] == 7) { tree[fim_vetor].token = '0'; }
+        else if (productions[prod] == 8) { tree[fim_vetor].token = '1'; }
+        else if (productions[prod] == 9) { tree[fim_vetor].token = 'x'; }
+        else { tree[fim_vetor].token = 'y'; }
+        tree[fim_vetor].visitado = 1;
+        tree[fim_vetor].filhos = 1;
     }
     // P11: E -> (EXE)
-    else if(productions[prod] == 11) {
-        if (tree[atual] == 'E'){
-            tree[4*atual + 1] = 'E'; tree[4*atual + 2] = 'X'; tree[4*atual + 3] = 'E'; tree[4*atual + 4] = ' ';
-            visitados[4*atual+4] = 1;
-        }
+    // P21: C -> (EXE)
+    else if(productions[prod] == 11 || productions[prod] == 21) {
+        if(productions[prod] == 11) { if (tree[atual].token != 'E') { return; } }
+        else { if (tree[atual].token != 'C') { return; } }
+        tree[fim_vetor].token = '('; tree[fim_vetor+1].token = 'E'; tree[fim_vetor+2].token = 'X';
+        tree[fim_vetor+3].token = 'E'; tree[fim_vetor+4].token = ')';
+        tree[fim_vetor].visitado = 1; tree[fim_vetor+4].visitado = 1;
+        tree[fim_vetor].filhos = 5;
     }
     // P12: X -> +
     // P13: X -> -
     // P14: X -> *
     // P15: X -> /
     else if(productions[prod] >= 12 && productions[prod] <= 15) {
-        if (tree[atual] == 'X'){
-            if(productions[prod] == 12) { tree[4*atual + 1] = '+'; }
-            else if(productions[prod] == 13) { tree[4*atual + 1] = '-'; }
-            else if(productions[prod] == 14) { tree[4*atual + 1] = '*'; }
-            else { tree[4*atual + 1] = '/'; }
-            tree[4*atual + 2] = ' '; tree[4*atual + 3] = ' '; tree[4*atual + 4] = ' ';
-            visitados[4*atual+1] = 1; visitados[4*atual+2] = 1; visitados[4*atual+3] = 1; visitados[4*atual+4] = 1;
-        }
+        if (tree[atual].token != 'X') { return; }
+        if(productions[prod] == 12) { tree[fim_vetor].token = '+'; }
+        else if(productions[prod] == 13) { tree[fim_vetor].token = '-'; }
+        else if(productions[prod] == 14) { tree[fim_vetor].token = '*'; }
+        else { tree[fim_vetor].token = '/'; }
+        tree[fim_vetor].visitado = 1;
+        tree[fim_vetor].filhos = 1;
     }
     // P16: C -> h=E
-    // P17: C -> atual=E
+    // P17: C -> i=E
     // P18: C -> j=E
     // P19: C -> k=E
     // P20: C -> z=E
     else if(productions[prod] >= 16 && productions[prod] <= 20) {
-        if (tree[atual] == 'C'){
-            tree[4*atual + 1] = 'E'; tree[4*atual + 2] = ' '; tree[4*atual + 3] = ' '; tree[4*atual + 4] = ' ';
-            visitados[4*atual+2] = 1; visitados[4*atual+3] = 1; visitados[4*atual+4] = 1;
-        }
-    }
-    // P21: C -> (EXE)
-    else if(productions[prod] == 21) {
-        if (tree[atual] == 'C'){
-            tree[4*atual + 1] = 'E'; tree[4*atual + 2] = 'X'; tree[4*atual + 3] = 'E'; tree[4*atual + 4] = ' ';
-            visitados[4*atual+4] = 1;
-        }
+        if (tree[atual].token != 'C') { return; }
+        if (productions[prod] == 16){ tree[fim_vetor].token = 'h'; }
+        else if (productions[prod] == 17){ tree[fim_vetor].token = 'i'; }
+        else if (productions[prod] == 18){ tree[fim_vetor].token = 'j'; }
+        else if (productions[prod] == 19){ tree[fim_vetor].token = 'k'; }
+        else if (productions[prod] == 20){ tree[fim_vetor].token = 'z'; }
+        tree[fim_vetor+1].token = '='; tree[fim_vetor+2].token = 'E';
+        tree[fim_vetor].visitado = 1;  tree[fim_vetor+1].visitado = 1;
+        tree[fim_vetor].filhos = 3;
     }
     // P22: C -> w(E){ C; }
-    else if(productions[prod] == 22) {
-        if (tree[atual] == 'C'){
-            tree[4*atual + 1] = 'E'; tree[4*atual + 2] = 'C'; tree[4*atual + 3] = ' '; tree[4*atual + 4] = ' ';
-            visitados[4*atual+3] = 1; visitados[4*atual+4] = 1;
-        }
-    }
     // P23: C -> f(E){ C; }
-    else if(productions[prod] == 23) {
-        if (tree[atual] == 'C'){
-            tree[4*atual + 1] = 'E'; tree[4*atual + 2] = 'C'; tree[4*atual + 3] = ' '; tree[4*atual + 4] = ' ';
-            visitados[4*atual+3] = 1; visitados[4*atual+4] = 1;
-        }
+    else if(productions[prod] == 22 || productions[prod] == 23) {
+        if (tree[atual].token != 'C') { return; }
+
+        for (int i = 0; i < 8; i++){ tree[fim_vetor+i].visitado = 1; }
+        if (productions[prod] == 22) { tree[fim_vetor].token = 'w'; }
+        else { tree[fim_vetor].token = 'f'; }
+        tree[fim_vetor+1].token = '('; tree[fim_vetor+2].token = 'E'; tree[fim_vetor+3].token = ')'; tree[fim_vetor+4].token = '{';
+        tree[fim_vetor+5].token = 'C'; tree[fim_vetor+6].token = ';'; tree[fim_vetor+7].token = '}';
+        tree[fim_vetor+2].visitado = 0; tree[fim_vetor+5].visitado = 0;
+        tree[fim_vetor].filhos = 8;
     }
     // P24: C -> o(E;E;E){ C; }
     else if(productions[prod] == 24) {
-        if (tree[atual] == 'C'){
-            tree[4*atual + 1] = 'E'; tree[4*atual + 2] = 'E'; tree[4*atual + 3] = 'E'; tree[4*atual + 4] = 'C';
-        }
+        if (tree[atual].token != 'C') { return; }
+
+        for (int i = 0; i < 12; i++){ tree[fim_vetor+i].visitado = 1; }
+        tree[fim_vetor].token = 'o'; tree[fim_vetor+1].token = '('; tree[fim_vetor+2].token = 'E'; tree[fim_vetor+3].token = ';';
+        tree[fim_vetor+4].token = 'E'; tree[fim_vetor+5].token = ';'; tree[fim_vetor+6].token = 'E'; tree[fim_vetor+7].token = ')';
+        tree[fim_vetor+8].token = '{'; tree[fim_vetor+9].token = 'C'; tree[fim_vetor+10].token = ';'; tree[fim_vetor+11].token = '}';
+        tree[fim_vetor+2].visitado = 0; tree[fim_vetor+4].visitado = 0; tree[fim_vetor+6].visitado = 0; tree[fim_vetor+9].visitado = 0;
+        tree[fim_vetor].filhos = 12;
     }
+    
+    for (int i = 0, j = 1; i < tree[fim_vetor].filhos; i++, j++) { tree[fim_vetor+i].indice = tree[atual].indice*12+j; }
+    fim_vetor += tree[fim_vetor].filhos;
+    prod++;
 }
