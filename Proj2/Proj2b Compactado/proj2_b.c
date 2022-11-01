@@ -335,7 +335,7 @@ int C(){
 void start_tree(){
     Tree tree[max];
     for (int i = 0; i < max; i++) { tree[i].token = ' '; tree[i].visitado = 0; tree[i].indice = -1; tree[i].filhos = 0; }
-    prod = 0; fim_vetor = 1; tree[0].token = 'S'; tree[0].filhos = 1; tree[0].indice = 0;
+    prod = 0; fim_vetor = 1; tree[0].token = 'S'; tree[0].indice = 0;
 
     parse_tree(tree, 0);
 
@@ -347,13 +347,15 @@ void parse_tree(Tree * tree, int atual){
     int inicio_vetor = -1;
 
     for (int i = 0; i < fim_vetor || (tree[i].indice == tree[atual].indice*12+1); i++){ if (tree[i].indice == tree[atual].indice*12+1) { inicio_vetor = i; } }
+    
     if ( inicio_vetor == -1 ) { put_production(tree, atual); }
-
-    for (int i = 0; i < fim_vetor || (tree[i].indice == tree[atual].indice*12+1);i++){ if (tree[i].indice == tree[atual].indice*12+1) { inicio_vetor = i; } }
-    for (int i = inicio_vetor; i < inicio_vetor+tree[inicio_vetor].filhos; i++){
-        if (tree[i].visitado == 0){ parse_tree(tree, i); return; }
+    else{
+        for (int i = inicio_vetor; i < inicio_vetor+tree[inicio_vetor].filhos; i++){
+            if (tree[i].visitado == 0){ parse_tree(tree, i); return; }
+        }
+        tree[atual].visitado = 1;
     }
-    tree[atual].visitado = 1;
+    
     parse_tree(tree, 0);
 }
 
