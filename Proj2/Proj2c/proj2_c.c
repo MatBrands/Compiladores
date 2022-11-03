@@ -7,11 +7,12 @@ struct No{
 	int visitado;
     int indice;
     int filhos;
+    int hash_original;
 }; typedef struct No Tree;
+
 struct Node{
     char token;
     int indice;
-    int visitado;
 }; typedef struct Node Syntax;
 
 char token;
@@ -63,7 +64,8 @@ void start(){
         S();
         if(!aceito) { printf("\nPalavra aceita."); }
         printf("\nProducoes: "); for (int i = 0; i < p_count; i++) { printf("P%d", productions[i]); if(i<p_count-1){ printf(", "); } }
-        printf("\nArvore: "); start_tree();
+        printf("\nArvore Sintatica: "); start_tree();
+        p_count = 0, aceito = 0;
         if (!feof(file)) { printf("\n****************************************************************************************************************************************\n\n"); start(); }
     }
 }
@@ -78,9 +80,11 @@ void lex(){
 void erro(int codigo){
     aceito = 1;
     if (token != '\n') { printf("\nErro %d. Token '%c' inesperado. Prosseguindo para proxima palavra.", codigo, token); }
-    while((token != '\n')) {
+    while(token != '\n') {
         token = fgetc(file);
-        if (feof(file)) { fclose(file); file = NULL; exit(0); }
+        if (feof(file)) {
+            fclose(file); file = NULL; exit(0);
+        }
     }
 }
 
@@ -352,11 +356,10 @@ void start_tree(){
     for (int i = 0; i< fim_synt_tree; i++){
         syntax_tree[i].indice = tree[i].indice;
         syntax_tree[i].token = tree[i].token;
-        syntax_tree[i].visitado = 0;
         if (i<fim_synt_tree-1){ printf("[%d|%d| %c ], ", i, syntax_tree[i].indice, syntax_tree[i].token); }
         else { printf("[%d|%d| %c ]\n", i, syntax_tree[i].indice, syntax_tree[i].token); } }
 
-    printf("\nArvore abstrata: "); start_abs(syntax_tree);
+    printf("Arvore abstrata: "); start_abs(syntax_tree);
 }
 
 void parse_tree(Tree *tree, int atual){
@@ -503,59 +506,314 @@ void put_production(Tree *tree, int atual){
 
 void start_abs(Syntax *syntax_tree){
     Tree tree[fim_synt_tree];
-    for (int i = 0; i < fim_synt_tree; i++) { tree[i].token = ' '; tree[i].visitado = 0; tree[i].indice = -1; tree[i].filhos = 0; }
-    prod = 0; fim_abs_tree = 0; tree[0].token = 'S'; tree[0].indice = 0;
+    for (int i = 0; i < fim_synt_tree; i++) { tree[i].token = ' '; tree[i].visitado = 0; tree[i].indice = -1; tree[i].filhos = 1; tree[i].hash_original = 0; }
+    fim_abs_tree = 1; tree[0].token = 'S'; tree[0].indice = 0;
 
-    abs_tree(syntax_tree, tree, fim_abs_tree);
+    abs_tree(syntax_tree, tree, 0);
 
-    for (int i = 0; i< fim_abs_tree; i++){ if (i<fim_abs_tree-1){ printf("%d %c, ", i, tree[i].token); } else { printf("%d %c\n", i, tree[i].token); } }
+    for (int i = 0; i< fim_abs_tree; i++){ if (i<fim_abs_tree-1){ printf("[%d | %d | %c], ", i, tree[i].indice, tree[i].token); } else { printf("[%d | %d | %c]\n", i, tree[i].indice, tree[i].token); } }
 }
 
 void abs_tree(Syntax *syntax_tree, Tree *tree, int atual){
-    if (prod > fim_synt_tree || atual == 0 && tree[atual].visitado == 1) { return; }
+    if (atual == 0 && tree[atual].visitado == 1) { return; }
     int inicio_vetor = -1;
 
     for (int i = 0; i < fim_synt_tree || (tree[i].indice == tree[atual].indice*2+1); i++){ if (tree[i].indice == tree[atual].indice*2+1) { inicio_vetor = i; } }
-    
-    if ( inicio_vetor == -1 ) { put_token(syntax_tree, tree, atual); }
+    if ( inicio_vetor == -1) { put_token(syntax_tree, tree, atual); }
     else{
-        for (int i = inicio_vetor; i < inicio_vetor+tree[inicio_vetor].filhos; i++){
-            if (tree[i].visitado == 0){ abs_tree(syntax_tree, tree, i); return; }
+        for (int i = inicio_vetor; i < fim_abs_tree; i++){
+            if(tree[i].indice == tree[atual].indice*2+1 || tree[i].indice == tree[atual].indice*2+2) {
+                if (tree[i].visitado == 0){ abs_tree(syntax_tree, tree, i); return; }
+            }
         }
+        if (tree[atual].token == 'X') { put_token(syntax_tree, tree, atual); }
         tree[atual].visitado = 1;
     }
-    
     abs_tree(syntax_tree, tree, 0);
 }
 
 void put_token(Syntax *syntax_tree, Tree *tree, int atual){
-    // S -> M
-    // S -> N
-    // S -> N, G
-    // S -> N, G, M
+    // S
+    if (tree[atual].token == 'S'){
+        int tokens;
+        for (int i = 0; i < fim_synt_tree; i++){
+            if (syntax_tree[i].indice == tree[atual].hash_original*12+1){
+                tokens = i;
+                break;
+            }
+        }
+        // M
+        if (syntax_tree[tokens].token == 'M') {
+            tree[atual].token = syntax_tree[tokens].token;
+            tree[atual].hash_original = syntax_tree[tokens].indice;
+        }
+        //    S
+        //   / \
+        //  G   M
+        else if (syntax_tree[tokens].token == 'G') {
+            // S
+            tree[atual].filhos = 2;
+            // G, M
+            for (int i = 0; i < tree[atual].filhos; i++){
+                tree[fim_abs_tree].token = syntax_tree[tokens+i].token;
+                tree[fim_abs_tree].hash_original = syntax_tree[tokens+i].indice;
+                tree[fim_abs_tree].indice = tree[atual].indice*2+(i+1);
+                tree[fim_abs_tree++].visitado = 0;
+            }
+        }
+        //    S
+        //   / \
+        //  N   G
+        //     / \
+        //    G   M
+        else if (syntax_tree[tokens].token == 'N') {
+            tree[atual].filhos = 2;
+            // N
+            tree[fim_abs_tree].token = syntax_tree[tokens].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[tokens].indice;
+            tree[fim_abs_tree].indice = 2*tree[atual].indice+1;
+            tree[fim_abs_tree++].visitado = 0;
+            // G pai
+            tree[fim_abs_tree].token = syntax_tree[tokens+1].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[tokens+1].indice;
+            tree[fim_abs_tree].indice = 2*tree[atual].indice+2;
+            tree[fim_abs_tree].visitado = 0;
+            int indice = tree[fim_abs_tree].indice;
+            tree[fim_abs_tree++].filhos = 2;
+            // G filho
+            tree[fim_abs_tree].token = syntax_tree[tokens+1].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[tokens+1].indice;
+            tree[fim_abs_tree].indice = 2*indice+1;
+            tree[fim_abs_tree++].visitado = 0;
+            // M
+            tree[fim_abs_tree].token = syntax_tree[tokens+2].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[tokens+2].indice;
+            tree[fim_abs_tree].indice = 2*indice+2;
+            tree[fim_abs_tree++].visitado = 0;
+        }
 
-    // N -> C, E
-    // G -> C, E
-    // M -> C, E
+        else{
+            tree[atual].visitado = 1;
+            return;
+        }
+    }
+    // NGM, GM, M
+    else if (tree[atual].token == 'N' || tree[atual].token == 'G' || tree[atual].token == 'M'){
+        int vetor[3];
+        for (int i = 0; i < fim_synt_tree; i++){
+            if (syntax_tree[i].indice == tree[atual].hash_original*12+1){
+                for (int j = i; j < i+13; j++){
+                    if (syntax_tree[j].token == 'C'){ vetor[0]=j; }
+                    else if (syntax_tree[j].token == 'r'){ vetor[1]=j; }
+                    else if (syntax_tree[j].token == 'E'){ vetor[2]=j; }
+                }
+                break;
+            }
+        }
+        if (tree[atual].token == 'N'){ tree[atual].token = 'n'; }
+        else if (tree[atual].token == 'G'){ tree[atual].token = 'g'; }
+        else if (tree[atual].token == 'M') { tree[atual].token = 'm'; }
+        else{
+            tree[atual].visitado = 1;
+            return;
+        }
+        tree[atual].filhos = 2;
+        // C, r, E
+        tree[fim_abs_tree].indice = 2*tree[atual].indice+1;
+        tree[fim_abs_tree+1].indice = 2*tree[atual].indice+2;
+        tree[fim_abs_tree+2].indice = 2*tree[fim_abs_tree+1].indice+1;
+        for (int i = 0; i < 3; i++){
+            tree[fim_abs_tree].token = syntax_tree[vetor[i]].token;
+            tree[fim_abs_tree++].hash_original = syntax_tree[vetor[i]].indice;
+        }
+    }
+    // E
+    else if (tree[atual].token == 'E'){
+        int tokens;
+        for (int i = 0; i < fim_synt_tree; i++){
+            if (syntax_tree[i].indice == tree[atual].hash_original*12+1){
+                tokens = i;
+                break;
+            }
+        }
+        // (EXE)
+        if (syntax_tree[tokens].token == '('){ tokens++;
+            // X
+            tree[atual].token = syntax_tree[tokens+1].token;
+            tree[atual].hash_original = syntax_tree[tokens+1].indice;
+            tree[atual].filhos = 2;
+            tree[atual].visitado = 0;
+            // E1
+            tree[fim_abs_tree].token = syntax_tree[tokens].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[tokens].indice;
+            tree[fim_abs_tree++].indice = 2*tree[atual].indice+1;
+            // E2
+            tree[fim_abs_tree].token = syntax_tree[tokens+2].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[tokens+2].indice;
+            tree[fim_abs_tree++].indice = 2*tree[atual].indice+2;
+        }
+        // E -> 0, 1, x, y
+        else if (syntax_tree[tokens].token == '0' || syntax_tree[tokens].token == '1' || 
+        syntax_tree[tokens].token == 'x' || syntax_tree[tokens].token == 'y'){
+            tree[atual].token = syntax_tree[tokens].token;
+            tree[atual].hash_original = syntax_tree[tokens].indice;
+            tree[atual].visitado = 1;
+            tree[atual].filhos = 1;
+        }
 
-    // E -> 0, 1, x, y
-    // X -> +, -, *, /
+        else{
+            tree[atual].visitado = 1;
+            return;
+        }
+    }
+    // X
+    else if (tree[atual].token == 'X'){
+        int tokens;
+        for (int i = 0; i < fim_synt_tree; i++){
+            if (syntax_tree[i].indice == tree[atual].hash_original*12+1){
+                tokens = i;
+                break;
+            }
+        }
+        tree[atual].token = syntax_tree[tokens].token;
+        tree[atual].hash_original = syntax_tree[tokens].indice;
+        tree[atual].visitado = 1;
+        tree[atual].filhos = 1;
+    }
+    // C
+    else if (tree[atual].token == 'C'){
+        int tokens;
+        for (int i = 0; i < fim_synt_tree; i++){
+            if (syntax_tree[i].indice == tree[atual].hash_original*12+1){
+                tokens = i;
+                break;
+            }
+        }
+        // (EXE)
+        if (syntax_tree[tokens].token == '('){ tokens++;
+            // X
+            tree[atual].token = syntax_tree[tokens+1].token;
+            tree[atual].hash_original = syntax_tree[tokens+1].indice;
+            tree[atual].filhos = 2;
+            // E1
+            tree[fim_abs_tree].token = syntax_tree[tokens].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[tokens].indice;
+            tree[fim_abs_tree++].indice = 2*tree[atual].indice+1;
+            // E2
+            tree[fim_abs_tree].token = syntax_tree[tokens+2].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[tokens+2].indice;
+            tree[fim_abs_tree++].indice = 2*tree[atual].indice+2;
+        }
+        // h, =, E
+        // i, =, E
+        // j, =, E
+        // k, =, E
+        // z, =, E
+        else if (syntax_tree[tokens].token == 'h' || syntax_tree[tokens].token == 'i' || syntax_tree[tokens].token == 'j' ||
+        syntax_tree[tokens].token == 'k' || syntax_tree[tokens].token == 'z'){
+            // =
+            tree[atual].token = syntax_tree[tokens+1].token;
+            tree[atual].hash_original = syntax_tree[tokens+1].indice;
+            tree[atual].filhos = 2;
+            // h|i|j|k|z
+            tree[fim_abs_tree].token = syntax_tree[tokens].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[tokens].indice;
+            tree[fim_abs_tree].indice = 2*tree[atual].indice+1;
+            tree[fim_abs_tree].filhos = 1;
+            tree[fim_abs_tree++].visitado = 1;
+            // E
+            tree[fim_abs_tree].token = syntax_tree[tokens+2].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[tokens+2].indice;
+            tree[fim_abs_tree].indice = 2*tree[atual].indice+2;
+            tree[fim_abs_tree++].visitado = 0;
+        }
+            // w | f, E, C
+        else if (syntax_tree[tokens].token == 'w' || syntax_tree[tokens].token == 'f'){
+            int valores[2];
+            for (int i = 0; i < fim_synt_tree; i++){
+                if (syntax_tree[i].indice == tree[atual].hash_original*12+1){
+                    for (int j = i; j < i+7; j++){
+                        if (syntax_tree[j].token == 'E'){ valores[0]=j; }
+                        else if (syntax_tree[j].token == 'C'){ valores[1]=j; break; }
+                    }
+                    break;
+                }
+            }
 
-    // E -> E, X, E
-    // C -> E, X, E
+            // w
+            tree[atual].token = syntax_tree[tokens].token;
+            tree[atual].hash_original = syntax_tree[tokens].indice;
+            tree[atual].filhos = 2;
+            // E
+            tree[fim_abs_tree].token = syntax_tree[valores[0]].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[valores[0]].indice;
+            tree[fim_abs_tree].indice = 2*tree[atual].indice+1;
+            tree[fim_abs_tree++].visitado = 0;
+            // C
+            tree[fim_abs_tree].token = syntax_tree[valores[1]].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[valores[1]].indice;
+            tree[fim_abs_tree].indice = 2*tree[atual].indice+2;
+            tree[fim_abs_tree++].visitado = 0;
+        }
 
-    // C -> h, =, E
-    // C -> i, =, E
-    // C -> j, =, E
-    // C -> k, =, E
-    // C -> z, =, E
-
-    // C -> w, E, C
-    // C -> f, E, C
-
-    // C -> o, E, E, E, C
-    
-    for (int i = 0, j = 1; i < tree[fim_abs_tree].filhos; i++, j++) { tree[fim_abs_tree+i].indice = tree[atual].indice*12+j; }
-    fim_abs_tree += tree[fim_abs_tree].filhos;
-    prod++;
+        // C -> o, E, E, E, C
+        else if (syntax_tree[tokens].token == 'o'){
+            int valores[4], test = 0;
+            for (int i = 0; i < fim_synt_tree; i++){
+                if (syntax_tree[i].indice == tree[atual].hash_original*12+1){
+                    for (int j = i; j < i+12; j++){
+                        if (syntax_tree[j].token == 'E'){ valores[test++] = j; }
+                        else if (syntax_tree[j].token == 'C'){ valores[test] = j; break; }
+                    }
+                    break;
+                }
+            }
+            // o
+            tree[atual].token = syntax_tree[tokens].token;
+            tree[atual].hash_original = syntax_tree[tokens].indice;
+            tree[atual].filhos = 2;
+            // E2
+            tree[fim_abs_tree].token = syntax_tree[valores[1]].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[valores[1]].indice;
+            tree[fim_abs_tree].indice = 2*tree[atual].indice+1;
+            tree[fim_abs_tree].filhos = 1;
+            tree[fim_abs_tree++].visitado = 0;
+            // E
+            tree[fim_abs_tree].token = syntax_tree[valores[1]].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[valores[1]].indice;
+            tree[fim_abs_tree].indice = 2*tree[fim_abs_tree-1].indice+1;
+            tree[fim_abs_tree++].visitado = 0;
+            // E1
+            tree[fim_abs_tree].token = syntax_tree[valores[0]].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[valores[0]].indice;
+            tree[fim_abs_tree].indice = 2*tree[atual].indice+2;
+            tree[fim_abs_tree].filhos = 1;
+            tree[fim_abs_tree++].visitado = 0;
+            // E
+            tree[fim_abs_tree].token = syntax_tree[valores[0]].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[valores[0]].indice;
+            tree[fim_abs_tree].indice = 2*tree[fim_abs_tree-1].indice+1;
+            tree[fim_abs_tree++].visitado = 0;
+            // C
+            tree[fim_abs_tree].token = syntax_tree[valores[3]].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[valores[3]].indice;
+            tree[fim_abs_tree].indice = 2*tree[fim_abs_tree-2].indice+2;
+            tree[fim_abs_tree].filhos = 2;
+            tree[fim_abs_tree++].visitado = 0;
+            // C
+            tree[fim_abs_tree].token = syntax_tree[valores[3]].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[valores[3]].indice;
+            tree[fim_abs_tree].indice = 2*tree[fim_abs_tree-1].indice+1;
+            tree[fim_abs_tree++].visitado = 0;
+            // E
+            tree[fim_abs_tree].token = syntax_tree[valores[2]].token;
+            tree[fim_abs_tree].hash_original = syntax_tree[valores[2]].indice;
+            tree[fim_abs_tree].indice = 2*tree[fim_abs_tree-2].indice+2;
+            tree[fim_abs_tree++].visitado = 0;
+        }
+        else{
+            tree[atual].visitado = 1;
+            return;
+        }
+    }
 }
