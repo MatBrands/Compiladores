@@ -11,18 +11,17 @@ struct Producao{
 
 FILE *file;
 Producao gramatica[100];
-int producoes_gramatica, tam_tree;
-int productions[100], p_count;
+int productions[100], producoes_gramatica, tam_tree, p_count;
 
 // 
 FILE *readFile(char *);
-void readProd(char *);
+void readGrammar(char *);
 char *readPalavra(FILE *, char *);
 void parsing_table(char *);
 // 
 
 int main (int argc, char **argv){
-    if(argc == 3){ readProd(argv[1]); file = readFile(argv[2]); }
+    if(argc == 3){ readGrammar(argv[1]); file = readFile(argv[2]); }
     else{ printf("Carregue os arquivos contendo as producoes e inputs.\n"); exit(1); }
 
     for (int i = 0; i < producoes_gramatica; i ++){
@@ -31,21 +30,19 @@ int main (int argc, char **argv){
     printf("Arvore tera %d filhos\n", tam_tree);
 
     printf("\n************************************************************************************\n\n");
-    int i = 0;
     char palavra[100];
-    while(!feof(file)){
-        printf("Palavra %d:\n", ++i);
+    do{
         readPalavra(file, palavra);
         printf("%s\n", palavra);
         parsing_table(palavra);
-        if (!feof(file)) printf("\n");
-    }
+    }while(!feof(file));
+    printf("\n");
 
     fclose(file); file = NULL;
     return 0;
 }
 
-void readProd(char *nome){
+void readGrammar(char *nome){
     FILE *arq;
     arq = fopen(nome, "r");
     if(arq == NULL){
@@ -108,7 +105,7 @@ void parsing_table(char *palavra){
         printf("Palavra aceita.\n");
         printf("Producoes: ");
         saida = fopen("productions", "w");
-        fprintf(saida, "%s\n", palavra);
+        fprintf(saida, "%d\n", p_count);
         fprintf(saida, "%d\n", tam_tree);
         for (int i = 0; i<p_count; i++) {
             if (i<p_count-1){
