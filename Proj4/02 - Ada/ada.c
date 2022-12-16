@@ -21,15 +21,15 @@ int producoes_gramatica, p_count, tam_tree, prod_atual, fim_vetor;
 
 // 
 FILE *readFile(char *);
-void readGrammar(char *);
+void readGrammar();
 void start_tree();
 void parse_tree(Tree *, int, int *);
 void put_production(Tree *, int, int *);
 // 
 
 int main (int argc, char **argv){
-    if(argc == 3){ readGrammar(argv[1]); file = readFile(argv[2]); }
-    else{ printf("Carregue os arquivos contendo as producoes e inputs.\n"); exit(1); }
+    if(argc == 2){ readGrammar(); file = readFile(argv[1]); }
+    else{ printf("Carregue o arquivo contendo o input.\n"); exit(1); }
 
     fscanf(file, "%d\n", &p_count);
     fscanf(file, "%d\n", &tam_tree);
@@ -50,9 +50,9 @@ int main (int argc, char **argv){
     return 0;
 }
 
-void readGrammar(char *nome){
+void readGrammar(){
     FILE *file;
-    file = fopen(nome, "r");
+    file = fopen("../grammar", "r");
     if(file == NULL){
         printf("Erro ao abrir arquivo.\n");
         exit(-1);

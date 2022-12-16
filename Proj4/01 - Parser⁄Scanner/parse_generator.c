@@ -15,14 +15,14 @@ int productions[100], producoes_gramatica, tam_tree, p_count;
 
 // 
 FILE *readFile(char *);
-void readGrammar(char *);
+void readGrammar();
 char *readPalavra(FILE *, char *);
 void parsing_table(char *);
 // 
 
 int main (int argc, char **argv){
-    if(argc == 3){ readGrammar(argv[1]); file = readFile(argv[2]); }
-    else{ printf("Carregue os arquivos contendo as producoes e inputs.\n"); exit(1); }
+    if(argc == 2){ readGrammar(); file = readFile(argv[1]); }
+    else{ printf("Carregue o arquivo contendo o input.\n"); exit(1); }
 
     for (int i = 0; i < producoes_gramatica; i ++){
         printf("P%d: %c -> %s\n", i+1, gramatica[i].esquerda, gramatica[i].direita, gramatica[i].tam);
@@ -42,9 +42,9 @@ int main (int argc, char **argv){
     return 0;
 }
 
-void readGrammar(char *nome){
+void readGrammar(){
     FILE *arq;
-    arq = fopen(nome, "r");
+    arq = fopen("../grammar", "r");
     if(arq == NULL){
         printf("Erro ao abrir arquivo.\n");
         exit(-1);
