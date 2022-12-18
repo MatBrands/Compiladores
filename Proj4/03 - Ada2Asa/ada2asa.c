@@ -17,8 +17,7 @@ int tam_syntax=0, tam_asa=1;
 
 // 
 FILE *readFile(char *);
-void readSynt(Syntax *);
-void start_convert(Syntax *);
+void start(Syntax *);
 void ada2asa(Syntax *, Tree *, int);
 void place_token(Syntax *, Tree *, int);
 // 
@@ -39,7 +38,7 @@ int main (int argc, char **argv){
     }
     fclose(file); file = NULL;
 
-    start_convert(synt_tree);
+    start(synt_tree);
 
     return 0;
 }
@@ -54,9 +53,9 @@ FILE *readFile(char *nome){
     return file;
 }
 
-void start_convert(Syntax *syntax){
+void start(Syntax *syntax){
     Tree asa_tree[tam_syntax];
-    for (int i = 0; i < tam_syntax; i++) { asa_tree[i].token = ' '; asa_tree[i].visitado = 0; asa_tree[i].indice = 0; asa_tree[i].filhos = 0; asa_tree[i].hash_original = 0; }
+    for (int i = 0; i < tam_syntax; i++) { asa_tree[i].token = '|'; asa_tree[i].visitado = 0; asa_tree[i].indice = 0; asa_tree[i].filhos = 0; asa_tree[i].hash_original = 0; }
     asa_tree[0].token = syntax[0].token;
 
     ada2asa(syntax, asa_tree, 0);
@@ -144,7 +143,7 @@ void place_token(Syntax *syntax, Tree *asa, int atual){
             else if (syntax[i].token == 'B'){ valores[1]=i; break; }
         }
 
-        asa[atual].token = ' ';
+        asa[atual].token = '|';
         asa[atual].filhos = 2;
 
         // C, B
@@ -170,7 +169,7 @@ void place_token(Syntax *syntax, Tree *asa, int atual){
                 else if (syntax[i].token == 'B'){ valores[1]=i; break; }
             }
 
-            asa[atual].token = ' ';
+            asa[atual].token = '|';
             asa[atual].filhos = 2;
 
             // C, B
@@ -329,7 +328,7 @@ void place_token(Syntax *syntax, Tree *asa, int atual){
         valores[0]=token_atual;
         valores[1]=token_atual+1;
 
-        asa[atual].token = ' ';
+        asa[atual].token = '|';
         asa[atual].filhos = 2;
 
         // C, B
@@ -353,7 +352,7 @@ void place_token(Syntax *syntax, Tree *asa, int atual){
                 else if (syntax[i].token == 'D'){ valores[1]=i; break; }
             }
 
-            asa[atual].token = ' ';
+            asa[atual].token = '|';
             asa[atual].filhos = 2;
 
             // C, D
