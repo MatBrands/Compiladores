@@ -225,8 +225,15 @@ void place_token(Syntax *syntax, Tree *asa, int atual){
             asa[tam_asa++].visitado = 1;
             // 
             token_atual = 0;
-            if (syntax[token_atual].token == 'h'){ while (syntax[token_atual].token != 'G'){ token_atual++; } }
-            else{ while (syntax[token_atual].token != 'G'){ token_atual++; } }
+            if (syntax[token_atual].token == 'h'){
+                if (syntax[1].token == 'G'){ token_atual = 1; }
+                else if (syntax[2].token == 'G') { token_atual = 2; }
+                else{ printf("Erro !\n"); exit(1); }
+            }
+            else{ 
+                if (syntax[1].token == 'N'){ token_atual = 1; }
+                else{ printf("Erro !\n"); exit(1); }
+            }
             asa[tam_asa].token = syntax[token_atual+2].token;
             asa[tam_asa].hash_original = syntax[token_atual+2].indice;
             asa[tam_asa++].indice = 2*asa[atual].indice+2;
