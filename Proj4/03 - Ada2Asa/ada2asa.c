@@ -224,7 +224,6 @@ void place_token(Syntax *syntax, Tree *asa, int atual){
             asa[tam_asa].indice = 2*asa[atual].indice+1;
             asa[tam_asa++].visitado = 1;
             // 
-            token_atual = 0;
             if (syntax[token_atual].token == 'h'){
                 if (syntax[1].token == 'G'){ token_atual = 1; }
                 else if (syntax[2].token == 'G') { token_atual = 2; }
@@ -234,8 +233,8 @@ void place_token(Syntax *syntax, Tree *asa, int atual){
                 if (syntax[1].token == 'N'){ token_atual = 1; }
                 else{ printf("Erro !\n"); exit(1); }
             }
-            asa[tam_asa].token = syntax[token_atual+2].token;
-            asa[tam_asa].hash_original = syntax[token_atual+2].indice;
+            asa[tam_asa].token = syntax[token_atual].token;
+            asa[tam_asa].hash_original = syntax[token_atual].indice;
             asa[tam_asa++].indice = 2*asa[atual].indice+2;
         }
         else if (syntax[token_atual].token == 'j' || syntax[token_atual].token == 'k' || syntax[token_atual].token == 'z'){
@@ -330,19 +329,21 @@ void place_token(Syntax *syntax, Tree *asa, int atual){
             asa[tam_asa++].indice = 2*indice+2;
         }
     }
-    else if (asa[atual].token == 'F'){
-        int valores[2];
-        valores[0]=token_atual;
-        valores[1]=token_atual+1;
 
+    else if (asa[atual].token == 'F'){
+        int valores;
         asa[atual].token = '|';
         asa[atual].filhos = 2;
 
-        // C, B
-        for (int i = 0; i < asa[atual].filhos; i++){
-            asa[tam_asa].token = syntax[valores[i]].token;
+        for (int i = 0; i < tam_syntax; i++){
+            if (syntax[i].indice == asa[atual].hash_original){ valores = i; break; }
+        }
+
+        // C, D
+        for (int i = 0; i < 2; i++){
+            asa[tam_asa].token = syntax[valores+i].token;
             asa[tam_asa].indice = 2*asa[atual].indice+(i+1);
-            asa[tam_asa++].hash_original = syntax[valores[i]].indice;
+            asa[tam_asa++].hash_original = syntax[valores+i].indice;
         }
     }
 

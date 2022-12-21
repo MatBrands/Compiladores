@@ -2,6 +2,7 @@
     "files.associations": {
         "parse_generator.h": "c",
         "stdio.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "test_1": "c"
     }
 }

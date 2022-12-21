@@ -39,8 +39,8 @@ void ada2asa(Syntax *syntax, Asa_Tree *asa, int atual){
     if (atual == 0 && asa[atual].visitado == 1) { return; }
     int inicio_vetor = -1;
 
-    for (int i = 0; i < tam_syntax || (asa[i].indice == asa[atual].indice*2+1); i++){ if (asa[i].indice == asa[atual].indice*2+1) { inicio_vetor = i; } }
-    
+    for (int i = 0; i < tam_syntax; i++){ if (asa[i].indice == asa[atual].indice*2+1 || asa[i].indice == asa[atual].indice*2+2) { inicio_vetor = i; break; } }
+
     if ( inicio_vetor == -1 ) { place_token(syntax, asa, atual); }
     else{
         for (int i = inicio_vetor; i < tam_asa; i++){
@@ -61,12 +61,9 @@ void place_token(Syntax *syntax, Asa_Tree *asa, int atual){
         while (syntax[token_atual].indice != asa[atual].hash_original*12+1){ token_atual++; }
     }
     else if (asa[atual].token == 'r') { while (syntax[token_atual].indice != asa[atual].hash_original+2){ token_atual++; } }
-
     // S
     if (asa[atual].token == 'S'){
-        // M
         while (syntax[token_atual].token != 'M') { token_atual++; }
-        
         asa[atual].token = syntax[token_atual].token;
         asa[atual].hash_original = syntax[token_atual].indice;
     }
@@ -91,15 +88,13 @@ void place_token(Syntax *syntax, Asa_Tree *asa, int atual){
             asa[tam_asa].indice = 2*asa[atual].indice+(i+1);
             asa[tam_asa++].hash_original = syntax[valores[i]].indice;
         }
-    }
-    
+    }   
     // r
     else if (asa[atual].token == 'r'){
         asa[tam_asa].token = syntax[token_atual].token;
         asa[tam_asa].hash_original = syntax[token_atual].indice;
         asa[tam_asa++].indice = 2*asa[atual].indice+1;
     }
-
     // A
     else if (asa[atual].token == 'A'){
         int valores[2];
@@ -119,8 +114,7 @@ void place_token(Syntax *syntax, Asa_Tree *asa, int atual){
             asa[tam_asa++].hash_original = syntax[valores[i]].indice;
         }
 
-    }
-    
+    }   
     // B
     else if (asa[atual].token == 'B'){
         if (syntax[token_atual].token == '.'){ 
@@ -146,7 +140,6 @@ void place_token(Syntax *syntax, Asa_Tree *asa, int atual){
             }
         }
     }
-
     // E
     else if (asa[atual].token == 'E'){
         // (EXE)
@@ -190,20 +183,20 @@ void place_token(Syntax *syntax, Asa_Tree *asa, int atual){
             asa[tam_asa].indice = 2*asa[atual].indice+1;
             asa[tam_asa++].visitado = 1;
             // 
-            token_atual = 0;
             if (syntax[token_atual].token == 'h'){
                 if (syntax[1].token == 'G'){ token_atual = 1; }
                 else if (syntax[2].token == 'G') { token_atual = 2; }
-                else{ printf("Erro !\n"); exit(1); }
+                else{ printf("Erro função nao declarada !\n"); exit(1); }
             }
             else{ 
                 if (syntax[1].token == 'N'){ token_atual = 1; }
-                else{ printf("Erro !\n"); exit(1); }
+                else{ printf("Erro função nao declarada !\n"); exit(1); }
             }
-            asa[tam_asa].token = syntax[token_atual+2].token;
-            asa[tam_asa].hash_original = syntax[token_atual+2].indice;
+            asa[tam_asa].token = syntax[token_atual].token;
+            asa[tam_asa].hash_original = syntax[token_atual].indice;
             asa[tam_asa++].indice = 2*asa[atual].indice+2;
         }
+
         else if (syntax[token_atual].token == 'j' || syntax[token_atual].token == 'k' || syntax[token_atual].token == 'z'){
             // =
             asa[atual].token = syntax[token_atual+1].token;
@@ -296,24 +289,26 @@ void place_token(Syntax *syntax, Asa_Tree *asa, int atual){
             asa[tam_asa++].indice = 2*indice+2;
         }
     }
+    
     else if (asa[atual].token == 'F'){
-        int valores[2];
-        valores[0]=token_atual;
-        valores[1]=token_atual+1;
-
+        int valores;
         asa[atual].token = '|';
         asa[atual].filhos = 2;
 
-        // C, B
-        for (int i = 0; i < asa[atual].filhos; i++){
-            asa[tam_asa].token = syntax[valores[i]].token;
+        for (int i = 0; i < tam_syntax; i++){
+            if (syntax[i].indice == asa[atual].hash_original){ valores = i; break; }
+        }
+
+        // C, D
+        for (int i = 0; i < 2; i++){
+            asa[tam_asa].token = syntax[valores+i].token;
             asa[tam_asa].indice = 2*asa[atual].indice+(i+1);
-            asa[tam_asa++].hash_original = syntax[valores[i]].indice;
+            asa[tam_asa++].hash_original = syntax[valores+i].indice;
         }
     }
 
     else if (asa[atual].token == 'D'){
-        if (syntax[token_atual].token == '.'){ 
+        if (syntax[token_atual].token == '}'){ 
             asa[atual].token = syntax[token_atual].token;
             asa[atual].hash_original = syntax[token_atual].indice;
             asa[atual].visitado = 1;
