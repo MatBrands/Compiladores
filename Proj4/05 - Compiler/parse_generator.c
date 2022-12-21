@@ -1,54 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "parse_generator.h"
 #define max 500
 
-struct Producao{
-    char esquerda;
-	char direita[20];
-    int tam;
-};typedef struct Producao Producao;
-
-FILE *file;
 Producao gramatica[100];
 int productions[100], producoes_gramatica, tam_tree, p_count;
 
-// 
-FILE *readFile(char *);
-void readGrammar();
-char *readPalavra(FILE *, char *);
-void parsing_table(char *);
-// 
-
-int main (int argc, char **argv){
-    if(argc == 2){ readGrammar(); file = readFile(argv[1]); }
-    else{ printf("Carregue o arquivo contendo o input.\n"); exit(1); }
-
-    for (int i = 0; i < producoes_gramatica; i ++){
-        printf("P%d: %c -> %s\n", i+1, gramatica[i].esquerda, gramatica[i].direita, gramatica[i].tam);
-    }
-    printf("Arvore tera %d filhos\n", tam_tree);
-
-    printf("\n************************************************************************************\n\n");
-    char palavra[100];
-    do{
-        readPalavra(file, palavra);
-        printf("%s\n", palavra);
-        parsing_table(palavra);
-    }while(!feof(file));
-    printf("\n");
-
-    fclose(file); file = NULL;
-    return 0;
-}
-
-void readGrammar(){
+void readGrammar(FILE *file){
     FILE *arq;
     arq = fopen("../grammar", "r");
     if(arq == NULL){
         printf("Erro ao abrir arquivo.\n");
         exit(-1);
     }
-    char token; producoes_gramatica = 0;
+    char token;
+    producoes_gramatica = 0;
     token = fgetc(arq);
     gramatica[producoes_gramatica].tam = 0; gramatica[producoes_gramatica].esquerda = token;
     while (!feof(arq)){
@@ -64,18 +30,9 @@ void readGrammar(){
             gramatica[producoes_gramatica].direita[gramatica[producoes_gramatica].tam++] = token;
         }
     }
-    for (int i = 0; i < producoes_gramatica; i++){ if (tam_tree < gramatica[i].tam) { tam_tree = gramatica[i].tam; } }
+    for (int i = 0; i < producoes_gramatica; i++){ printf("P%d: %c -> %s\n", i+1, gramatica[i].esquerda, gramatica[i].direita, gramatica[i].tam); if (tam_tree < gramatica[i].tam) { tam_tree = gramatica[i].tam; } }
+    printf("Arvore tera %d filhos\n", tam_tree);
     fclose(arq);
-}
-
-FILE *readFile(char *nome){
-    FILE *file;
-    file = fopen(nome, "r");
-    if(file == NULL){
-        printf("Erro ao abrir arquivo.\n");
-        exit(-1);
-    }
-    return file;
 }
 
 char *readPalavra(FILE *file, char *palavra){
@@ -88,10 +45,10 @@ char *readPalavra(FILE *file, char *palavra){
     palavra[i] = '\0';
 }
 
-void parsing_table(char *palavra){
+int parsing_table(char *palavra){
     // i | Qi | Token | Stack | Pi
     char token, stack[512];
-    int indice = 0, top = -1, ponteiro = 0;
+    int resultado, indice = 0, top = -1, ponteiro = 0;
     p_count = 0;
     q0:
     token = palavra[ponteiro++];
@@ -118,7 +75,7 @@ void parsing_table(char *palavra){
         }
 
         fclose(saida); saida = NULL;
-
+        resultado = 1;
         goto fim; 
     }
     if (token == ' ') { token = palavra[ponteiro++]; goto q1; }
@@ -153,6 +110,8 @@ void parsing_table(char *palavra){
         printf("Producoes: ");
         for (int i = 0; i<p_count-1; i++) { printf("P%d   ", productions[i]); }
         printf("P%d\n", productions[p_count-1]);
+        resultado = 0;
     }
     fim:
+    return resultado;
 }
